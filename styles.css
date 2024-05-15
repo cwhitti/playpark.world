@@ -1,0 +1,25 @@
+.bingo-board {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+  margin: 20px;
+}
+
+.bingo-cell {
+  border: 1px solid #000;
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+  user-select: none;
+}
+
+.bingo-cell.unmarked {
+  background-color: white;
+}
+.bingo-cell.marked {
+  background-color: yellow;
+}
+
+.bingo-cell.won {
+  background-color: blue;
+}

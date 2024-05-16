@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Sponge Bingo</title>
+    <link rel="stylesheet" href="../styles/styles.css">
+</head>
+<body>
+    <header>
+        <h1>AI Sponge Bingo!</h1>
+    </header>
+    <nav>
+        <a href="../index.html">Home</a>
+        <a href="bingo.html">AI SpongeBob</a>
+        <a href="../club_penguin/bingo.html">Club Penguin</a>
+    </nav>
+    <main>
+        <h2>Find the Stream <a
+              href="https://www.youtube.com/watch?v=HXLmao_feJQ&ab_channel=AISpongeRehydrated"
+              target="_blank">Here</a></h2>
+
+        <!-- Button to generate a new bingo board -->
+        <button id="generateBoardButton">Generate New Board</button>
+        
+    </main>
+
+    <div class="bingo-board" id="bingoBoard"></div>
+    <script src="../scripts/bingo.js"></script>
+
+    <!-- Pass the file name directly as a parameter -->
+    <input type="hidden" id="data-file" value="../entries/ai_sponge_entries.txt">
+</body>
+</html>

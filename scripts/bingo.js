@@ -1,33 +1,51 @@
 document.addEventListener('DOMContentLoaded', () =>
 {
+
+  //declare variables
+  let sentences = [];
+  const fileName = document.getElementById('data-file').value;
+  const generateBoardButton = document.getElementById('generateBoardButton');
+
   // get the entries from the txt file
-  fetch('entries.txt')
-
-    // grab the text
-    .then(response => response.text())
-
-    // create the data
+  fetch(fileName)
+    .then( response => response.text() )
     .then(data =>
-      {
-        // split the data on new lines
-        const sentences = data.split('\n').filter(Boolean);
+    {
+      // split sentences
+      sentences = data.split('\n').filter(Boolean);
 
-        // ensure we have enough sentences
-        if (sentences.length < 25)
-        {
-          alert('Not enough sentences in entries.txt to create a bingo board.');
-          return;
-        }
+      // catch for too few
+      if (sentences.length < 25) {
+        // send alert
+        alert('Not enough sentences in entries.txt to create a bingo board.');
+        return;
+    }
+    // create the bingo board
+    createBingoBoard(sentences);
+    }
+    )
 
-      // create bingo board
-      createBingoBoard(sentences);
-    })
-
-    // catch entries.txt not existing
+    // catch any errors
     .catch(error =>
     {
-      console.error('Error fetching entries.txt:', error);
-    });
+      console.error('Error fetching ' + fileName + ":" , error);
+    }
+    );
+
+  // Add click event listener to the button
+  generateBoardButton.addEventListener('click', function()
+    {
+      // Call the function to generate a new bingo board
+      generateNewBoard(sentences); // Pass sentences to the function
+    }
+    );
+  // Function to generate a new bingo board
+  function generateNewBoard(sentences)
+  {
+      const bingoBoard = document.getElementById('bingoBoard');
+      bingoBoard.innerHTML = ''; // Clear existing board
+      createBingoBoard(sentences);
+  }
 
   // shuffle the array
   function shuffle(array)
@@ -40,6 +58,8 @@ document.addEventListener('DOMContentLoaded', () =>
     {
       // generate j index
       const j = Math.floor(Math.random() * (i + 1));
+
+      // shuffle!
       [array[i], array[j]] = [array[j], array[i]];
     }
 
@@ -50,23 +70,33 @@ document.addEventListener('DOMContentLoaded', () =>
   // create the bingo board
   function createBingoBoard( sentences )
   {
-    // declare variables
-    let bingo = false;
 
-      // grab bingoBoard object
-      const boardContainer = document.getElementById('bingoBoard');
+    // grab bingoBoard object
+    const boardContainer = document.getElementById('bingoBoard');
 
-      // grab 25 sentences
-      const shuffledSentences = shuffle(sentences.slice()).slice(0, 25);
+    // grab 25 sentences
+    const shuffledSentences = shuffle(sentences.slice()).slice(0, 25);
+
+    shuffledSentences[12] = "Free Space";
 
     // go through each sentence
-    shuffledSentences.forEach(sentence =>
+    shuffledSentences.forEach((sentence, index) =>
     {
       // create div element
       const cell = document.createElement('div');
 
       // add bingo-cell to class list
       cell.classList.add('bingo-cell');
+
+      if ( index == 12 )
+      {
+        cell.classList.add('freespace');
+      }
+
+      else
+      {
+        cell.classList.add('unmarked');
+      }
 
       // add inner text
       cell.innerText = sentence;
@@ -77,11 +107,6 @@ document.addEventListener('DOMContentLoaded', () =>
 
         // toggle the marked
         cell.classList.toggle('marked');
-
-        if ( checkBingo( cell ) )
-        {
-          alert("Bingo");
-        }
 
       });
 
@@ -114,7 +139,7 @@ document.addEventListener('DOMContentLoaded', () =>
         if ( row.every(cell => cell.classList.contains('marked') ) )
         {
           // BINGO!!!!
-          toggleAllBlue( row );
+          // toggleAllBlue( row );
 
           // yay yes bingo
           return true;
@@ -128,7 +153,7 @@ document.addEventListener('DOMContentLoaded', () =>
         if ( column.every(cell => cell.classList.contains('marked') ) )
         {
           // BINGO!!!!
-          toggleAllBlue( column );
+          //toggleAllBlue( column );
 
           // yay yes bingo
           return true;
@@ -149,7 +174,7 @@ document.addEventListener('DOMContentLoaded', () =>
        if ( diagonal1.every(cell => cell.classList.contains('marked') ) )
        {
          // BINGO!!!!
-         toggleAllBlue( diagonal1 );
+         //toggleAllBlue( diagonal1 );
 
          // yay yes bingo
          return true;
@@ -163,7 +188,7 @@ document.addEventListener('DOMContentLoaded', () =>
        if ( diagonal2.every(cell => cell.classList.contains('marked') ) )
        {
          // BINGO!!!!
-         toggleAllBlue( diagonal2 );
+         //toggleAllBlue( diagonal2 );
 
          // yay yes bingo
          return true;
@@ -173,14 +198,10 @@ document.addEventListener('DOMContentLoaded', () =>
      return false;
   }
 
-  function isInsideGrid(row, col) {
-    return row >= 0 && row < 5 && col >= 0 && col < 5;
-  }
-
   // skips elements in row, col, or diag if everything in set is won already
   function skipElements( set )
   {
-    return set.every(cell => cell.classList.contains('won'));
+    return set.every(cell => cell.classList.contains('marked'));
   }
 
   // toggle each element in row, col, or diag blue
@@ -193,11 +214,4 @@ document.addEventListener('DOMContentLoaded', () =>
   {
     set.forEach(cell => cell.classList.add('won'));
   }
-
-  // handles highlights for entire row, col, or diag
-  function handleHighlights( type, clickedCell )
-  {
-    
-  }
-
 });

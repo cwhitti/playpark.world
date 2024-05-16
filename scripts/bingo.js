@@ -1,217 +1,227 @@
-document.addEventListener('DOMContentLoaded', () =>
-{
-
-  //declare variables
-  let sentences = [];
-  const fileName = document.getElementById('data-file').value;
-  const generateBoardButton = document.getElementById('generateBoardButton');
-
-  // get the entries from the txt file
-  fetch(fileName)
-    .then( response => response.text() )
-    .then(data =>
-    {
-      // split sentences
-      sentences = data.split('\n').filter(Boolean);
-
-      // catch for too few
-      if (sentences.length < 25) {
-        // send alert
-        alert('Not enough sentences in entries.txt to create a bingo board.');
-        return;
-    }
-    // create the bingo board
-    createBingoBoard(sentences);
-    }
-    )
-
-    // catch any errors
-    .catch(error =>
-    {
-      console.error('Error fetching ' + fileName + ":" , error);
-    }
-    );
-
-  // Add click event listener to the button
-  generateBoardButton.addEventListener('click', function()
-    {
-      // Call the function to generate a new bingo board
-      generateNewBoard(sentences); // Pass sentences to the function
-    }
-    );
-  // Function to generate a new bingo board
-  function generateNewBoard(sentences)
+document.addEventListener
+(
+  'DOMContentLoaded', () =>
   {
-      const bingoBoard = document.getElementById('bingoBoard');
-      bingoBoard.innerHTML = ''; // Clear existing board
+    //declare variables
+    let sentences = [];
+    const fileName = document.getElementById('data-file').value;
+    const generateBoardButton = document.getElementById('generateBoardButton');
+
+    // get the entries from the txt file
+    fetch(fileName)
+      .then( response => response.text() )
+      .then(data =>
+      {
+        // split sentences
+        sentences = data.split('\n').filter(Boolean);
+
+        // catch for too few
+        if (sentences.length < 25) {
+          // send alert
+          alert('Not enough sentences in entries.txt to create a bingo board.');
+          return;
+      }
+      // create the bingo board
       createBingoBoard(sentences);
-  }
+      }
+      )
 
-  // shuffle the array
-  function shuffle(array)
-  {
-    // declare variables
-    let i = array.length - 1
+      // catch any errors
+      .catch(error =>
+      {
+        console.error('Error fetching ' + fileName + ":" , error);
+      }
+      );
 
-    // loop through array
-    for (i; i > 0; i--)
+    // Add click event listener to the button
+    generateBoardButton.addEventListener
+    (
+      'click', function()
+      {
+        // Call the function to generate a new bingo board
+        generateNewBoard(sentences); // Pass sentences to the function
+      }
+    );
+
+    // Function to generate a new bingo board
+    function generateNewBoard(sentences)
     {
-      // generate j index
-      const j = Math.floor(Math.random() * (i + 1));
-
-      // shuffle!
-      [array[i], array[j]] = [array[j], array[i]];
+        const bingoBoard = document.getElementById('bingoBoard');
+        bingoBoard.innerHTML = ''; // Clear existing board
+        createBingoBoard(sentences);
     }
 
-    // return shuffled array
-    return array;
-  }
-
-  // create the bingo board
-  function createBingoBoard( sentences )
-  {
-
-    // grab bingoBoard object
-    const boardContainer = document.getElementById('bingoBoard');
-
-    // grab 25 sentences
-    const shuffledSentences = shuffle(sentences.slice()).slice(0, 25);
-
-    shuffledSentences[12] = "Free Space";
-
-    // go through each sentence
-    shuffledSentences.forEach((sentence, index) =>
+    // shuffle the array
+    function shuffle(array)
     {
-      // create div element
-      const cell = document.createElement('div');
+      // declare variables
+      let i = array.length - 1
 
-      // add bingo-cell to class list
-      cell.classList.add('bingo-cell');
-
-      if ( index == 12 )
+      // loop through array
+      for (i; i > 0; i--)
       {
-        cell.classList.add('freespace');
+        // generate j index
+        const j = Math.floor(Math.random() * (i + 1));
+
+        // shuffle!
+        [array[i], array[j]] = [array[j], array[i]];
       }
 
-      else
+      // return shuffled array
+      return array;
+    }
+
+    // create the bingo board
+    function createBingoBoard( sentences )
+    {
+
+      // grab bingoBoard object
+      const boardContainer = document.getElementById('bingoBoard');
+
+      // grab 25 sentences
+      const shuffledSentences = shuffle(sentences.slice()).slice(0, 25);
+
+      shuffledSentences[12] = "Free Space";
+
+      // go through each sentence
+      shuffledSentences.forEach((sentence, index) =>
       {
-        cell.classList.add('unmarked');
-      }
+        // create div element
+        const cell = document.createElement('div');
 
-      // add inner text
-      cell.innerText = sentence;
+        // add bingo-cell to class list
+        cell.classList.add('bingo-cell');
 
-      // listen for click
-      cell.addEventListener('click', () =>
-      {
+        if ( index == 12 )
+        {
+          cell.classList.toggle('freespace');
+        }
 
-        // toggle the marked
-        cell.classList.toggle('marked');
+        else
+        {
+          cell.classList.toggle('unmarked');
+        }
 
+        // add inner text
+        cell.innerText = sentence;
+
+        // listen for click
+        cell.addEventListener('click', () =>
+        {
+
+          // toggle the marked
+          cell.classList.toggle('marked');
+
+          if ( index == 12 )
+          {
+            cell.classList.toggle('freespace');
+          }
+
+        });
+
+        // add cell to board
+        boardContainer.appendChild(cell);
       });
+    }
 
-      // add cell to board
-      boardContainer.appendChild(cell);
-    });
-  }
-
-  function checkBingo( clickedCell )
-  {
-    // grab all cells
-    const cells = Array.from(document.querySelectorAll('.bingo-cell'));
-
-    // set size
-    const size = 5;
-
-    // Check rows and columns
-    for (let i = 0; i < size; i++)
+    function checkBingo( clickedCell )
     {
-      // grab rows
-      const row = cells.slice(i * size, (i + 1) * size);
+      // grab all cells
+      const cells = Array.from(document.querySelectorAll('.bingo-cell'));
 
-      // grab cols
-      const column = cells.filter((_, index) => index % size === i);
+      // set size
+      const size = 5;
 
-      // check to skip rows
-      if ( !skipElements(row) )
+      // Check rows and columns
+      for (let i = 0; i < size; i++)
       {
-        // every item is YELLOW
-        if ( row.every(cell => cell.classList.contains('marked') ) )
+        // grab rows
+        const row = cells.slice(i * size, (i + 1) * size);
+
+        // grab cols
+        const column = cells.filter((_, index) => index % size === i);
+
+        // check to skip rows
+        if ( !skipElements(row) )
         {
-          // BINGO!!!!
-          // toggleAllBlue( row );
+          // every item is YELLOW
+          if ( row.every(cell => cell.classList.contains('marked') ) )
+          {
+            // BINGO!!!!
+            // toggleAllBlue( row );
 
-          // yay yes bingo
-          return true;
+            // yay yes bingo
+            return true;
+          }
         }
-      }
 
-      // check to skip rows
-      if ( !skipElements(column) )
-      {
-        // every item is YELLOW
-        if ( column.every(cell => cell.classList.contains('marked') ) )
+        // check to skip rows
+        if ( !skipElements(column) )
         {
-          // BINGO!!!!
-          //toggleAllBlue( column );
+          // every item is YELLOW
+          if ( column.every(cell => cell.classList.contains('marked') ) )
+          {
+            // BINGO!!!!
+            //toggleAllBlue( column );
 
-          // yay yes bingo
-          return true;
+            // yay yes bingo
+            return true;
+          }
         }
-      }
-    } // end for loop
+      } // end for loop
 
-    // grab diagonals
-    const diagonal1 = cells.filter((_, index) => index % (size + 1) === 0);
-    const diagonal2 = cells.filter((_, index) => index % (size - 1) === 0 &&
-                                                 index > 0 && index < size * size - 1);
+      // grab diagonals
+      const diagonal1 = cells.filter((_, index) => index % (size + 1) === 0);
+      const diagonal2 = cells.filter((_, index) => index % (size - 1) === 0 &&
+                                                   index > 0 && index < size * size - 1);
 
 
-     // check to skip rows
-     if ( !skipElements(diagonal1) )
-     {
-       // every item is YELLOW
-       if ( diagonal1.every(cell => cell.classList.contains('marked') ) )
+       // check to skip rows
+       if ( !skipElements(diagonal1) )
        {
-         // BINGO!!!!
-         //toggleAllBlue( diagonal1 );
+         // every item is YELLOW
+         if ( diagonal1.every(cell => cell.classList.contains('marked') ) )
+         {
+           // BINGO!!!!
+           //toggleAllBlue( diagonal1 );
 
-         // yay yes bingo
-         return true;
+           // yay yes bingo
+           return true;
+         }
        }
-     }
 
-     // check to skip rows
-     if ( !skipElements(diagonal2) )
-     {
-       // every item is YELLOW
-       if ( diagonal2.every(cell => cell.classList.contains('marked') ) )
+       // check to skip rows
+       if ( !skipElements(diagonal2) )
        {
-         // BINGO!!!!
-         //toggleAllBlue( diagonal2 );
+         // every item is YELLOW
+         if ( diagonal2.every(cell => cell.classList.contains('marked') ) )
+         {
+           // BINGO!!!!
+           //toggleAllBlue( diagonal2 );
 
-         // yay yes bingo
-         return true;
+           // yay yes bingo
+           return true;
+         }
        }
-     }
 
-     return false;
-  }
+       return false;
+    }
 
-  // skips elements in row, col, or diag if everything in set is won already
-  function skipElements( set )
-  {
-    return set.every(cell => cell.classList.contains('marked'));
-  }
+    // skips elements in row, col, or diag if everything in set is won already
+    function skipElements( set )
+    {
+      return set.every(cell => cell.classList.contains('marked'));
+    }
 
-  // toggle each element in row, col, or diag blue
-  function toggleAllBlue( set )
-  {
-    set.forEach(cell => cell.classList.add('won'));
-  }
+    // toggle each element in row, col, or diag blue
+    function toggleAllBlue( set )
+    {
+      set.forEach(cell => cell.classList.add('won'));
+    }
 
-  function toggleAllWins( set)
-  {
-    set.forEach(cell => cell.classList.add('won'));
+    function toggleAllWins( set)
+    {
+      set.forEach(cell => cell.classList.add('won'));
+    }
   }
-});
+);

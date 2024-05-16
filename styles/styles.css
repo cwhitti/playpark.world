@@ -53,7 +53,7 @@ footer {
 .bingo-cell {
   border: 1px solid #000;
   font-weight: bold;
-  /* padding: 20px; */
+  padding: 20px;
   text-align: center;
   cursor: pointer;
   user-select: none;
@@ -65,24 +65,30 @@ footer {
 .bingo-cell p {
   font-weight: bold;
 }
+.bingo-cell:nth-child(13)
+{ styles }
 
 .bingo-cell.unmarked {
   background-color: white;
 }
 .bingo-cell.marked::before{
-  content:"";
-  opacity:.5;
-  background-image: url(/images/PLAYPARK.png);
+}
 
+.bingo-cell.marked.freespace {
+  content:"";
+  background-image: url(/images/favicon.png);
+  background-size: cover;
+  background-color: white;
+  opacity:unset;
 }
 
 .bingo-cell.marked {
+  content:"";
+  opacity:.5;
+  background-image: url(/images/simple_PLAYPARK.png);
+  background-size: cover;
 }
 
 .bingo-cell.won {
   background-color: blue;
-}
-
-.bingo-cell.freespace {
-  background-color: #CFCFCF;
 }

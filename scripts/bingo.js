@@ -81,7 +81,7 @@ document.addEventListener
       // grab 25 sentences
       const shuffledSentences = shuffle(sentences.slice()).slice(0, 25);
 
-      shuffledSentences[12] = "Free Space";
+      shuffledSentences[12] = "";
 
       // go through each sentence
       shuffledSentences.forEach((sentence, index) =>
@@ -94,7 +94,8 @@ document.addEventListener
 
         if ( index == 12 )
         {
-          cell.classList.toggle('freespace');
+          cell.classList.add('marked');
+          cell.classList.add('freespace');
         }
 
         else
@@ -108,13 +109,10 @@ document.addEventListener
         // listen for click
         cell.addEventListener('click', () =>
         {
-
-          // toggle the marked
-          cell.classList.toggle('marked');
-
-          if ( index == 12 )
+          if ( index !== 12 )
           {
-            cell.classList.toggle('freespace');
+            // toggle the marked
+            cell.classList.toggle('marked');
           }
 
         });
